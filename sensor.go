@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"strconv"
 )
 
 type paSensor struct {
@@ -16,8 +17,12 @@ type paSensor struct {
 	Results          []paSensorResult `json:"results"`
 }
 
+// PurpleAir API decoded (with notes on different versions) and AQI calculation
+// https://docs.google.com/document/d/15ijz94dXJ-YAZLi9iZ_RaBwrZ4KtYeCy08goGBwnbCU/edit
+
 type paSensorResult struct {
 	Id        int     `json:"ID"`
+	ParentId  int     `json:"ParentID"`
 	Label     string  `json:"Label"`
 	Lat       float64 `json:"Lat"`
 	Lon       float64 `json:"Lon"`
@@ -45,8 +50,16 @@ type paSensorResult struct {
 // the "Site ID" field: the sensor will be the digits after the last underscore character.
 // e.g. for "Site ID: PA_6b88dd5af19b42b5_37011" the sensor ID is 37011. Be sure the sensor's provider is PurpleAir.
 // If successful, a pointer to a paSensor struct will be returned else an error.
-func sensorRead(sensorId int) (*paSensor, error) {
-	url := fmt.Sprintf("https://www.purpleair.com/json?show=%d", sensorId)
+func sensorRead(sensorIds []int) (*paSensor, error) {
+	// API support multiple sensorIDs on a single call separated by a "|".
+	// TODO: put in a limit to prevent gross abuse
+	url := "https://www.purpleair.com/json?show="
+	for i, v := range sensorIds {
+		if i != 0 {
+			url += "|"
+		}
+		url += strconv.Itoa(v)
+	}
 
 	r, err := http.Get(url)
 	if err != nil {
@@ -55,7 +68,7 @@ func sensorRead(sensorId int) (*paSensor, error) {
 	defer r.Body.Close()
 
 	if r.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected status reading sensor %d: status code %v", sensorId, r.StatusCode)
+		return nil, fmt.Errorf("Unexpected status reading sensor: status code %v", r.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -67,6 +80,13 @@ func sensorRead(sensorId int) (*paSensor, error) {
 	err = json.Unmarshal(body, s)
 	if err != nil {
 		return nil, err
+	}
+
+	// if ParentId remains the default value, update it with the Id to simplify other areas of code.
+	for i, r := range s.Results {
+		if r.ParentId == 0 {
+			s.Results[i].ParentId = s.Results[i].Id
+		}
 	}
 
 	return s, nil

@@ -7,21 +7,16 @@ import (
 
 func main() {
 	conf := configLoad("purpleprom.conf")
-	//	log.Printf("conf: %v", conf)
-
 	if conf.Metrics.Enabled {
 		metricsDisplay(conf.Metrics.Path, conf.Metrics.Port)
 	}
 
 	for {
-		for _, s := range conf.Sensors {
-			r, err := sensorRead(s)
-			if err != nil {
-				log.Fatal(err.Error())
-			}
-
-			//			log.Printf("sensor %d: %+v", s, r)
-			metricsUpdate(r.Results)
+		r, err := sensorRead(conf.Sensors)
+		if err != nil {
+			log.Print(err.Error())
+		} else {
+			metricsRecord(r.Results)
 		}
 
 		time.Sleep(conf.PollInterval.Duration())
