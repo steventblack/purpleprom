@@ -38,7 +38,7 @@ The ```prometheus.yml``` file needs to be extended to include scraping of the pu
   scrape_interval: 30s                         // this should be 1/2 of the pollinterval time
   scrape_timeout: 10s                          // should be shorter than the scrape_interval
   static_configs:
-    - targets: ['hostname.example.com:6005']   // provide the full hostname and port where purpleprom is running
+    - targets: ['hostname.example.com:6005']   // full hostname and port where purpleprom is running
 ```
 
-If the ```path``` attribute in ```purpleprome.conf``` has been changed from the default "/metrics", then the ```prometheus.yml``` file needs to include a ```metrics_path``` attribute with a matching path. If there is a firewall between the Prometheus scraper and the purpleprom app, then a firewall hole must be opened for the destination and port.
+If the ```path``` attribute in ```purpleprom.conf``` has been changed from the default "/metrics", then the ```prometheus.yml``` file needs to include a ```metrics_path``` attribute with a matching path. If there is a firewall between the Prometheus scraper and the purpleprom app, then a firewall hole must be opened for the destination and port.
