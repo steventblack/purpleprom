@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	conf := configLoad("purpleprom.conf")
+	flags := configFlags()
+	conf := configLoad(flags.ConfFile)
 	if conf.Metrics.Enabled {
 		metricsDisplay(conf.Metrics.Path, conf.Metrics.Port)
 	}

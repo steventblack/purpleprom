@@ -2,12 +2,21 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
 )
+
+// Flags are the CLI options
+// ConfFile specifies the location of the config file and overrides the default value
+// LogFile specifies an output location for any logged information; default is *no* logging
+type Flags struct {
+	ConfFile string
+	LogFile  string
+}
 
 // Config defines the structure for the configuration information used by the application.
 // It defaults to a JSON-encoded file named "purpleprom.conf" in the current working directory.
@@ -22,6 +31,18 @@ type Metrics struct {
 	Enabled bool   `json:"enabled"`
 	Path    string `json:"path"`
 	Port    int    `json:"port"`
+}
+
+// configFlags handles the flag processing for any CLI options specified
+func configFlags() *Flags {
+	f := new(Flags)
+
+	flag.StringVar(&f.ConfFile, "c", "purpleprom.conf", "Path to configuration file")
+	flag.StringVar(&f.LogFile, "o", "", "Enable logging information and path to output file")
+
+	flag.Parse()
+
+	return f
 }
 
 // configLoad reads in the specified file and attempts to unmarshal it.
