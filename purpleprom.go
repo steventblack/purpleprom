@@ -7,7 +7,10 @@ import (
 
 func main() {
 	flags := configFlags()
+
 	conf := configLoad(flags.ConfFile)
+	configLogger(flags.LogFile)
+
 	if conf.Metrics.Enabled {
 		metricsDisplay(conf.Metrics.Path, conf.Metrics.Port)
 	}

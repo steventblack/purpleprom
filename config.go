@@ -45,6 +45,25 @@ func configFlags() *Flags {
 	return f
 }
 
+// configLogger enables/disables the logging and, if enabled, directs it to the named file
+func configLogger(l string) {
+	// if no logger specified, then disable logging by redirecting to discard
+	if l == "" {
+		log.SetFlags(0)
+		log.SetOutput(ioutil.Discard)
+		return
+	}
+
+	// open the named file and redirect logging output to it
+	f, err := os.OpenFile(l, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(f)
+	log.Printf("Logging enabled to %s", l)
+}
+
 // configLoad reads in the specified file and attempts to unmarshal it.
 // The Config struct is
 func configLoad(p string) *Config {
