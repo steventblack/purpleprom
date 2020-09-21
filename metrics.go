@@ -92,8 +92,11 @@ func metricsRecord(results []paSensorResult) {
 		pamPm100AQIVec.WithLabelValues(sensorId, parentId).Set(aqi_pm100)
 
 		// publish the calculated AQI (max of all AQI calculations)
-		aqi := math.Max(aqi_pm25, aqi_pm100)
-		pamAQIVec.WithLabelValues(sensorId, parentId).Set(aqi)
+		// only publish if there isn't a flag on the data or hardware
+		if r.DataFlag == 0 && r.HwFlag == 0 {
+			aqi := math.Max(aqi_pm25, aqi_pm100)
+			pamAQIVec.WithLabelValues(sensorId, parentId).Set(aqi)
+		}
 	}
 }
 

@@ -26,7 +26,8 @@ type paSensorResult struct {
 	Label     string  `json:"Label"`
 	Lat       float64 `json:"Lat"`
 	Lon       float64 `json:"Lon"`
-	Version   string  `json:"Version"`
+	DataFlag  int     `json:"Flag"`
+	HwFlag    int     `json:"A_H"`
 	P03um     float64 `json:"p_0_3_um,string"`
 	P05um     float64 `json:"p_0_5_um,string"`
 	P10um     float64 `json:"p_1_0_um,string"`
@@ -42,6 +43,7 @@ type paSensorResult struct {
 	Humidity  int     `json:"humidity,string"`
 	Temp      int     `json:"temp_f,string"`
 	Pressure  float64 `json:"pressure,string"`
+	Version   string  `json:"Version"`
 }
 
 // readSensor fetches the JSON reading for the named sensorId and attempts to process it into a paSensor struct.
