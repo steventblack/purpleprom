@@ -51,6 +51,10 @@ type paSensorResult struct {
 // e.g. for "Site ID: PA_6b88dd5af19b42b5_37011" the sensor ID is 37011. Be sure the sensor's provider is PurpleAir.
 // If successful, a pointer to a paSensor struct will be returned else an error.
 func sensorRead(sensorIds []int) (*paSensor, error) {
+	if len(sensorIds) <= 0 {
+		return nil, fmt.Errorf("No sensors specified")
+	}
+
 	// API support multiple sensorIDs on a single call separated by a "|".
 	// TODO: put in a limit to prevent gross abuse
 	url := "https://www.purpleair.com/json?show="
