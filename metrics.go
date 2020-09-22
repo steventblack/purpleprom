@@ -79,21 +79,22 @@ func metricsRecord(results []paSensorResult) {
 			pamPressureVec.WithLabelValues(sensorId, parentId).Set(r.Pressure)
 		}
 
-		// publish the raw readings
-		pamPm25Vec.WithLabelValues(sensorId, parentId).Set(r.Pm25_cf1)
-		pamPm100Vec.WithLabelValues(sensorId, parentId).Set(r.Pm100_cf1)
-
-		// calc the individual AQIs for the various measurements
-		aqi_pm25 := sensorAQI(r.Pm25_cf1)
-		aqi_pm100 := sensorAQI(r.Pm100_cf1)
-
-		// publish the individual AQI calculations
-		pamPm25AQIVec.WithLabelValues(sensorId, parentId).Set(aqi_pm25)
-		pamPm100AQIVec.WithLabelValues(sensorId, parentId).Set(aqi_pm100)
-
-		// publish the calculated AQI (max of all AQI calculations)
 		// only publish if there isn't a flag on the data or hardware
+		// transitory events may lead to nonsense values (e.g. bug crawling over sensor)
 		if r.DataFlag == 0 && r.HwFlag == 0 {
+			// publish the raw readings
+			pamPm25Vec.WithLabelValues(sensorId, parentId).Set(r.Pm25_cf1)
+			pamPm100Vec.WithLabelValues(sensorId, parentId).Set(r.Pm100_cf1)
+
+			// calc the individual AQIs for the various measurements
+			aqi_pm25 := sensorAQI(r.Pm25_cf1)
+			aqi_pm100 := sensorAQI(r.Pm100_cf1)
+
+			// publish the individual AQI calculations
+			pamPm25AQIVec.WithLabelValues(sensorId, parentId).Set(aqi_pm25)
+			pamPm100AQIVec.WithLabelValues(sensorId, parentId).Set(aqi_pm100)
+
+			// publish the calculated AQI (max of all AQI calculations)
 			aqi := math.Max(aqi_pm25, aqi_pm100)
 			pamAQIVec.WithLabelValues(sensorId, parentId).Set(aqi)
 		}
