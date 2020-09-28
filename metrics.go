@@ -81,7 +81,7 @@ func metricsRecord(results []paSensorResult) {
 
 		// only publish if there isn't a flag on the data or hardware
 		// transitory events may lead to nonsense values (e.g. bug crawling over sensor)
-		if r.DataFlag == 0 && r.HwFlag == 0 {
+		if r.DataFlag == 0 && !r.HwFlag {
 			// publish the raw readings
 			pamPm25Vec.WithLabelValues(sensorId, parentId).Set(r.Pm25_cf1)
 			pamPm100Vec.WithLabelValues(sensorId, parentId).Set(r.Pm100_cf1)

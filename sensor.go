@@ -27,7 +27,7 @@ type paSensorResult struct {
 	Lat       float64 `json:"Lat"`
 	Lon       float64 `json:"Lon"`
 	DataFlag  int     `json:"Flag"`
-	HwFlag    int     `json:"A_H"`
+	HwFlag    bool    `json:"A_H,string"`
 	P03um     float64 `json:"p_0_3_um,string"`
 	P05um     float64 `json:"p_0_5_um,string"`
 	P10um     float64 `json:"p_1_0_um,string"`
